@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        // 自定义jquery的方法，将Form表单中的内容转换成json
+        $.fn.serializeJson = function () {
+            var serializeObj = {};
+            var array = this.serializeArray();
+            var str = this.serialize();
+            $(array).each(function () {
+                if (serializeObj[this.name]) {
+                    if ($.isArray(serializeObj[this.name])) {
+                        serializeObj[this.name].push(this.value);
+                    } else {
+                        serializeObj[this.name] = [serializeObj[this.name], this.value];
+                    }
+                } else {
+                    serializeObj[this.name] = this.value;
+                }
+            });
+            return serializeObj;
+        };
+
+        function mySubmit() {
+            var params = $("#add").serializeJson();
+            $.ajax({
+                url: "news",
+                type: "post",
+                data: params,
+                statusCode: {
+                    201: function () {
+                        alert("保存成功")
+                        location.href = "newslist.html";
+                    },
+                    500: function () {
+                        alert("服务器异常")
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+用户添加<br>
+<form id="add" name="add">
+    标题:<input type="text" name="title"><br>
+    内容:<input type="text" name="content"><br>
+    作者:<input type="text" name="author"><br>
+    时间:<input type="date" name="publishtime">
+    <input type="button" value="提交" onclick="mySubmit()">
+</form>
+
+</body>
+</html>
